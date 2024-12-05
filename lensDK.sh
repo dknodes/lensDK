@@ -78,6 +78,7 @@ main_menu() {
 
         case $action in
             1)
+                install_docker
                 clone_lens_node
                 start_lens_node
                 read -p "Press Enter to return to the main menu..." ;;
@@ -122,8 +123,12 @@ start_lens_node() {
 # Function to stop the Lens Node
 stop_lens_node() {
     echo "Stopping the Lens Node..."
-    cd lens-node
-    docker-compose down
+    if [ -d "lens-node" ]; then
+        cd lens-node
+        docker-compose --file testnet-external-node.yml down
+    else
+        echo "Directory lens-node not found, cannot stop the node."
+    fi
     if [ $? -eq 0 ]; then
         echo "Lens Node successfully stopped."
     else
@@ -146,6 +151,32 @@ check_lens_node_health() {
         echo "Lens Node is healthy."
     else
         echo "Lens Node is not responding or unhealthy."
+    fi
+}
+
+# Function to install Docker and Docker Compose
+install_docker() {
+    echo "Checking for Docker..."
+    if ! command -v docker &> /dev/null; then
+        echo "Docker not found. Installing Docker..."
+        sudo apt-get update
+        sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+        curl -fsSL https://get.docker.com -o get-docker.sh
+        sudo sh get-docker.sh
+        sudo usermod -aG docker $USER
+        echo "Docker installed."
+    else
+        echo "Docker is already installed."
+    fi
+
+    echo "Checking for Docker Compose..."
+    if ! command -v docker-compose &> /dev/null; then
+        echo "Docker Compose not found. Installing Docker Compose..."
+        sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | jq -r .tag_name)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+        sudo chmod +x /usr/local/bin/docker-compose
+        echo "Docker Compose installed."
+    else
+        echo "Docker Compose is already installed."
     fi
 }
 
