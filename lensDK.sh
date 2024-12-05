@@ -71,7 +71,8 @@ main_menu() {
         echo -e "${CYAN}  1) Clone and Start the Lens Node ${ICON_INSTALL}${NC}"
         echo -e "${CYAN}  2) Stop the Node ${ICON_DELETE}${NC}"
         echo -e "${CYAN}  3) View Logs ${ICON_LOGS}${NC}"
-        echo -e "${CYAN}  4) Exit ${ICON_EXIT}${NC}"
+        echo -e "${CYAN}  4) Check Node Health ${ICON_CONFIG}${NC}"
+        echo -e "${CYAN}  5) Exit ${ICON_EXIT}${NC}"
         draw_bottom_border
         read -p "Choose an option: " action
 
@@ -87,6 +88,9 @@ main_menu() {
                 view_lens_node_logs
                 read -p "Press Enter to return to the main menu..." ;;
             4)
+                check_lens_node_health
+                read -p "Press Enter to return to the main menu..." ;;
+            5)
                 echo "Exiting the program..."
                 exit 0
                 ;;
@@ -118,6 +122,7 @@ start_lens_node() {
 # Function to stop the Lens Node
 stop_lens_node() {
     echo "Stopping the Lens Node..."
+    cd lens-node
     docker-compose down
     if [ $? -eq 0 ]; then
         echo "Lens Node successfully stopped."
@@ -137,6 +142,11 @@ view_lens_node_logs() {
 check_lens_node_health() {
     echo "Checking the health of the Lens Node..."
     curl http://localhost:3081/health
+    if [ $? -eq 0 ]; then
+        echo "Lens Node is healthy."
+    else
+        echo "Lens Node is not responding or unhealthy."
+    fi
 }
 
 # Execute Main Menu
