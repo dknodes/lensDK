@@ -143,11 +143,14 @@ view_lens_node_logs() {
     echo "Logs displayed."
 }
 
-# Function to check the health of the Lens Node
+# Function to check the health of the Lens Node with colorful JSON output
 check_lens_node_health() {
     echo "Checking the health of the Lens Node..."
-    curl http://localhost:3081/health
+    response=$(curl -s http://localhost:3081/health)
+
+    # Check if the response was successful
     if [ $? -eq 0 ]; then
+        echo "$response" | jq .  # This will pretty-print the JSON with colors
         echo "Lens Node is healthy."
     else
         echo "Lens Node is not responding or unhealthy."
@@ -156,6 +159,7 @@ check_lens_node_health() {
 
 # Function to install Docker and Docker Compose
 install_docker() {
+    sudo apt-get install jq
     echo "Checking for Docker..."
     if ! command -v docker &> /dev/null; then
         echo "Docker not found. Installing Docker..."
