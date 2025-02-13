@@ -127,14 +127,13 @@ start_lens_node() {
 
 lens_update() {
     cd lens-node
-    docker-compose --file testnet-external-node.yml down
     git pull
     echo "Starting the Lens Node..."
-    docker-compose --file testnet-external-node.yml up -d
+    docker-compose --file testnet-external-node.yml restart
     if [ $? -eq 0 ]; then
-        echo "Lens Node successfully started."
+        echo "Lens Node successfully update and restarted."
     else
-        echo "Error while starting the Lens Node."
+        echo "Error while restarting the Lens Node."
     fi
 }
 
