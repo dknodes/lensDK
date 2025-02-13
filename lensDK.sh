@@ -72,7 +72,8 @@ main_menu() {
         echo -e "${CYAN}  2) Stop the Node ${ICON_DELETE}${NC}"
         echo -e "${CYAN}  3) View Logs ${ICON_LOGS}${NC}"
         echo -e "${CYAN}  4) Check Node Health ${ICON_CONFIG}${NC}"
-        echo -e "${CYAN}  5) Exit ${ICON_EXIT}${NC}"
+        echo -e "${CYAN}  5) Update Node${ICON_CONFIG}${NC}"
+        echo -e "${CYAN}  6) Exit ${ICON_EXIT}${NC}"
         draw_bottom_border
         read -p "Choose an option: " action
 
@@ -92,6 +93,9 @@ main_menu() {
                 check_lens_node_health
                 read -p "Press Enter to return to the main menu..." ;;
             5)
+                lens_update
+                read -p "Press Enter to return to the main menu..." ;;
+            6)
                 echo "Exiting the program..."
                 exit 0
                 ;;
@@ -111,6 +115,20 @@ clone_lens_node() {
 
 # Function to start the Lens Node
 start_lens_node() {
+    echo "Starting the Lens Node..."
+    docker-compose --file testnet-external-node.yml up -d
+    if [ $? -eq 0 ]; then
+        echo "Lens Node successfully started."
+    else
+        echo "Error while starting the Lens Node."
+    fi
+}
+
+
+lens_update() {
+    cd lens-node
+    docker-compose --file testnet-external-node.yml down
+    git pull
     echo "Starting the Lens Node..."
     docker-compose --file testnet-external-node.yml up -d
     if [ $? -eq 0 ]; then
